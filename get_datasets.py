@@ -41,8 +41,9 @@ def unzip_datasets():
 		zip_ref.extractall(PATH_DATASET)
 
 if os.path.isfile(PATH_DATASRC + FILE_NAME):
-	print('Arquivo {} encontrado. Download ignorado. \n'.format(FILE_NAME))
+	print('O arquivo {} encontrado. Download ignorado.'.format(FILE_NAME))
 else:
 	get_dataset(url, PATH_DATASRC, FILE_NAME)
 
 unzip_datasets()
+print('O arquivo {} descompatado e movido para o diretório {}.'.format(FILE_NAME, PATH_DATASET))
