@@ -1,15 +1,27 @@
 # Libraries usadas
 from tqdm import tqdm
+import time
+import datetime as dt
 import os.path
 import requests
 import sys
 import zipfile
 
+# Inicializa o timer de execução
+print("Iniciado em: {}\n".format(dt.datetime.now()))
+start_time = time.time()
+
 # Diretórios
 PATH_DATASRC = './datasrc/'
 PATH_DATASET = './datasets/'
-FILE_NAME = 'ml-latest-small.zip'
-url = "http://files.grouplens.org/datasets/movielens/ml-latest-small.zip"
+
+# Para o nome do arquivo e a url foram criados dois vetores, dessa forma, 
+# é possível baixar ambos os arquivos com a lógica implementada
+FILE_NAME = ['ml-latest-small.zip', 
+						'ml-25mb.zip']
+
+url = ['http://files.grouplens.org/datasets/movielens/ml-25m.zip',
+			'http://files.grouplens.org/datasets/movielens/ml-latest-small.zip']
 
 def get_dataset(url, PATH_DATASRC, FILE_NAME):
 	# Realiza uma requisição HTTP
@@ -36,14 +48,24 @@ def get_dataset(url, PATH_DATASRC, FILE_NAME):
 			f.write(data)
 	t.close()
 
-def unzip_datasets():
+def unzip_datasets(PATH_DATASRC, FILE_NAME):
 	with zipfile.ZipFile(PATH_DATASRC + FILE_NAME, 'r') as zip_ref:
 		zip_ref.extractall(PATH_DATASET)
 
-if os.path.isfile(PATH_DATASRC + FILE_NAME):
-	print('O arquivo {} encontrado. Download ignorado.'.format(FILE_NAME))
-else:
-	get_dataset(url, PATH_DATASRC, FILE_NAME)
+######################################################################################################
+### Main
+print('Baixando os datasets...')
 
-unzip_datasets()
-print('O arquivo {} descompatado e movido para o diretório {}.'.format(FILE_NAME, PATH_DATASET))
+for i in range(0, len(url)):
+	if os.path.isfile(PATH_DATASRC + FILE_NAME[i]):
+		print('  + O arquivo {} encontrado. Download ignorado.'.format(FILE_NAME))
+	else:
+		get_dataset(url[i], PATH_DATASRC, FILE_NAME[i])
+
+	unzip_datasets(PATH_DATASRC, FILE_NAME[i])
+	print('  + O arquivo {} descompatado e movido para o diretório {}.\n'.format(FILE_NAME[i], PATH_DATASET))
+
+# Print out elapsed time
+elapsed_time = (time.time() - start_time) / 60
+print("Finalizado em: {}. ".format(dt.datetime.now()), end="")
+print("Tempo de execução: {0:0.4f} minutes.".format(elapsed_time))
